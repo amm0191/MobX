@@ -5,6 +5,7 @@ import { useParams, Link } from "react-router-dom"
 import { observer } from "mobx-react-lite"
 import { useStore } from "../context/StoreContext"
 import Pagination from "../components/Pagination"
+import { Container, Row, Col, Card, Alert, Button, Spinner } from "react-bootstrap"
 
 const GenreGames = observer(() => {
   const { id } = useParams()
@@ -24,63 +25,89 @@ const GenreGames = observer(() => {
     window.scrollTo(0, 0)
   }
 
-  if (genresStore.loading && genresStore.currentPage === 1)
-    return <p className="text-center text-lg text-white">Cargando...</p>
-
-  if (genresStore.error) return <p className="text-center text-red-500">{genresStore.error}</p>
-
   return (
-    <div className="bg-gradient-to-r from-amber-300 to-green-400 min-h-screen text-white">
-      <div className="container mx-auto p-6">
-        <h1 className="text-4xl font-extrabold text-center mb-4 drop-shadow-lg">
+    <div className="bg-primary-gradient py-5">
+      <Container>
+        <h1 className="text-center text-white fw-bold mb-4">
+          <i className="bi bi-joystick me-2"></i>
           Juegos del género: {genresStore.genreName || `#${id}`}
         </h1>
 
-        <div className="mb-8 text-center">
-          <Link
-            to="/"
-            className="inline-block bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
-          >
-            ← Volver a la página principal
-          </Link>
+        <div className="text-center mb-4">
+          <Button as={Link} to="/" variant="light" className="shadow">
+            <i className="bi bi-arrow-left me-1"></i> Volver a la página principal
+          </Button>
         </div>
 
-        {/* Lista de juegos */}
-        {genresStore.loading && genresStore.currentPage > 1 ? (
-          <p className="text-center text-lg">Cargando más juegos...</p>
-        ) : genresStore.games.length === 0 ? (
-          <p className="text-center text-xl text-gray-300">No se encontraron juegos de este género.</p>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
-            {genresStore.games.map((game) => (
-              <Link
-                key={game.id}
-                to={`/games/${game.id}`}
-                className="block bg-white overflow-hidden shadow-2xl transform hover:scale-105 transition duration-300 border-solid border-3 border-black rounded-lg"
-              >
-                <img
-                  src={game.background_image || "/placeholder.svg"}
-                  alt={game.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2">{game.name}</h2>
-                  <p className="text-lg text-gray-600">⭐ {game.rating} / 5</p>
-                </div>
-              </Link>
-            ))}
+        {/* Mensaje de carga */}
+        {genresStore.loading && genresStore.currentPage === 1 && (
+          <div className="text-center py-5">
+            <Spinner animation="border" variant="light" />
+            <p className="mt-2 text-white">Cargando juegos...</p>
           </div>
         )}
 
-        {/* Paginación */}
-        {genresStore.games.length > 0 && (
-          <Pagination
-            currentPage={genresStore.currentPage}
-            totalPages={genresStore.totalPages}
-            onPageChange={handlePageChange}
-          />
+        {/* Mensaje de error */}
+        {genresStore.error && (
+          <Alert variant="danger" className="my-4">
+            <i className="bi bi-exclamation-triangle me-2"></i>
+            {genresStore.error}
+          </Alert>
         )}
-      </div>
+
+        {/* Lista de juegos */}
+        {!genresStore.loading && (
+          <>
+            {genresStore.games.length === 0 ? (
+              <Alert variant="info" className="text-center">
+                <i className="bi bi-info-circle me-2"></i>
+                No se encontraron juegos de este género.
+              </Alert>
+            ) : (
+              <>
+                {genresStore.loading && genresStore.currentPage > 1 && (
+                  <div className="text-center mb-4">
+                    <Spinner animation="border" variant="light" size="sm" />
+                    <span className="ms-2 text-white">Cargando más juegos...</span>
+                  </div>
+                )}
+
+                <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+                  {genresStore.games.map((game) => (
+                    <Col key={game.id}>
+                      <Link to={`/games/${game.id}`} className="text-decoration-none">
+                        <Card className="h-100 shadow">
+                          <Card.Img
+                            variant="top"
+                            src={game.background_image || "/placeholder.svg"}
+                            alt={game.name}
+                            className="game-card-img"
+                          />
+                          <Card.Body>
+                            <Card.Title className="fw-bold text-dark">{game.name}</Card.Title>
+                            <Card.Text className="text-accent-custom">
+                              <i className="bi bi-star-fill me-1"></i> {game.rating} / 5
+                            </Card.Text>
+                          </Card.Body>
+                        </Card>
+                      </Link>
+                    </Col>
+                  ))}
+                </Row>
+
+                {/* Paginación */}
+                {genresStore.games.length > 0 && (
+                  <Pagination
+                    currentPage={genresStore.currentPage}
+                    totalPages={genresStore.totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                )}
+              </>
+            )}
+          </>
+        )}
+      </Container>
     </div>
   )
 })

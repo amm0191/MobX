@@ -1,39 +1,34 @@
+import { Card, Badge } from "react-bootstrap"
 import { Link } from "react-router-dom"
 
 const GameCard = ({ game }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
-      <img
+    <Card className="h-100 shadow">
+      <Card.Img
+        variant="top"
         src={game.background_image || "/placeholder.svg?height=200&width=300"}
         alt={game.name}
-        className="w-full h-48 object-cover"
+        className="game-card-img"
       />
-      <div className="p-4">
-        <h3 className="text-xl font-bold text-gray-800 mb-2">{game.name}</h3>
-        <div className="flex flex-wrap gap-1 mb-3">
+      <Card.Body>
+        <Card.Title className="fw-bold">{game.name}</Card.Title>
+        <div className="mb-3">
           {game.genres?.slice(0, 3).map((genre) => (
-            <Link
-              key={genre.id}
-              to={`/games/genre/${genre.id}`}
-              className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full"
-            >
-              {genre.name}
+            <Link key={genre.id} to={`/genres/${genre.id}`} className="text-decoration-none">
+              <Badge className="me-1 badge-genre">{genre.name}</Badge>
             </Link>
           ))}
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-amber-600 font-medium">
+        <div className="d-flex justify-content-between align-items-center">
+          <span className="text-accent-custom fw-bold">
             {game.rating ? `★ ${game.rating.toFixed(1)}` : "Sin rating"}
           </span>
-          <Link
-            to={`/game/${game.id}`}
-            className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition-colors"
-          >
+          <Link to={`/games/${game.id}`} className="btn btn-sm btn-secondary-custom text-white">
             Ver detalles
           </Link>
         </div>
-      </div>
-    </div>
+      </Card.Body>
+    </Card>
   )
 }
 

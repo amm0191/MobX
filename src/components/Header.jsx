@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 
 const Header = () => {
   return (
-    <header className="bg-gradient-to-r from-green-400 to-amber-300 py-6 shadow-lg border-b-4 border-green-400">
+    <header className="bg-green-400  py-6 shadow-lg border-b-4 border-green-400">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="text-3xl font-extrabold text-white drop-shadow-lg">
           Videojuegos Moya

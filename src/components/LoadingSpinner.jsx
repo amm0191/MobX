@@ -1,11 +1,14 @@
+import { Spinner, Container } from "react-bootstrap"
+
 const LoadingSpinner = () => {
-    return (
-      <div className="flex justify-center items-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-      </div>
-    )
-  }
-  
-  export default LoadingSpinner
-  
-  
+  return (
+    <Container className="d-flex justify-content-center align-items-center py-5">
+      <Spinner animation="border" role="status" variant="primary" style={{ width: "3rem", height: "3rem" }}>
+        <span className="visually-hidden">Cargando...</span>
+      </Spinner>
+    </Container>
+  )
+}
+
+export default LoadingSpinner
+

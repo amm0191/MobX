@@ -6,6 +6,7 @@ import { observer } from "mobx-react-lite"
 import debounce from "lodash.debounce"
 import { useStore } from "../context/StoreContext"
 import Pagination from "../components/Pagination"
+import { Container, Row, Col, Form, Alert, Spinner } from "react-bootstrap"
 
 const Games = observer(() => {
   const { gamesStore } = useStore()
@@ -54,60 +55,87 @@ const Games = observer(() => {
     gamesStore.fetchGames()
   }, [searchParams, gamesStore])
 
-  // Mensaje de error o de carga
-  if (gamesStore.loading) return <p className="text-center text-lg text-white">Cargando...</p>
-  if (gamesStore.error) return <p className="text-center text-red-500">{gamesStore.error}</p>
-
   return (
-    <div className="bg-gradient-to-r from-amber-300 to-green-400 min-h-screen text-white">
-      <div className="container mx-auto p-6">
-        <h1 className="text-5xl font-extrabold text-center mb-10 drop-shadow-lg">¡Explora los mejores videojuegos!</h1>
+    <div className="bg-secondary-gradient py-5">
+      <Container>
+        <h1 className="text-center text-white fw-bold mb-4">
+          <i className="bi bi-controller me-2"></i>
+          Explora los mejores videojuegos
+        </h1>
 
         {/* Campo de búsqueda */}
-        <form onSubmit={handleSubmit} className="flex justify-center mb-10">
-          <input
-            type="text"
-            placeholder="Busca tu juego favorito..."
-            value={gamesStore.searchTerm}
-            onChange={handleSearchChange}
-            className="w-full sm:w-80 p-4 text-lg rounded-full focus:outline-none focus:ring-2 focus:ring-green-400 bg-white text-gray-800 placeholder-gray-500 shadow-xl"
-          />
-        </form>
+        <Form onSubmit={handleSubmit} className="search-container mb-5">
+          <Form.Group>
+            <Form.Control
+              type="text"
+              placeholder="Busca tu juego favorito..."
+              value={gamesStore.searchTerm}
+              onChange={handleSearchChange}
+              className="py-2 shadow"
+            />
+          </Form.Group>
+        </Form>
+
+        {/* Mensaje de carga */}
+        {gamesStore.loading && (
+          <div className="text-center py-5">
+            <Spinner animation="border" variant="light" />
+            <p className="mt-2 text-white">Cargando juegos...</p>
+          </div>
+        )}
+
+        {/* Mensaje de error */}
+        {gamesStore.error && (
+          <Alert variant="danger" className="my-4">
+            <i className="bi bi-exclamation-triangle me-2"></i>
+            {gamesStore.error}
+          </Alert>
+        )}
 
         {/* Lista de juegos */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
-          {gamesStore.games.length === 0 ? (
-            <p className="text-center text-xl text-gray-300 col-span-full">No se encontraron juegos.</p>
-          ) : (
-            gamesStore.games.map((game) => (
-              <Link
-                key={game.id}
-                to={`/games/${game.id}`}
-                className="block bg-white overflow-hidden shadow-2xl transform hover:scale-105 transition duration-300 border-solid border-3 border-black rounded-lg"
-              >
-                <img
-                  src={game.background_image || "/placeholder.svg"}
-                  alt={game.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2">{game.name}</h2>
-                  <p className="text-lg text-gray-600">⭐ {game.rating} / 5</p>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
+        {!gamesStore.loading && (
+          <>
+            {gamesStore.games.length === 0 ? (
+              <Alert variant="info" className="text-center">
+                <i className="bi bi-info-circle me-2"></i>
+                No se encontraron juegos que coincidan con tu búsqueda.
+              </Alert>
+            ) : (
+              <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+                {gamesStore.games.map((game) => (
+                  <Col key={game.id}>
+                    <Link to={`/games/${game.id}`} className="text-decoration-none">
+                      <div className="card h-100 shadow">
+                        <img
+                          src={game.background_image || "/placeholder.svg"}
+                          alt={game.name}
+                          className="card-img-top game-card-img"
+                        />
+                        <div className="card-body">
+                          <h5 className="card-title fw-bold text-dark">{game.name}</h5>
+                          <p className="card-text text-accent-custom">
+                            <i className="bi bi-star-fill me-1"></i>
+                            {game.rating} / 5
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </Col>
+                ))}
+              </Row>
+            )}
 
-        {/* Paginación */}
-        {gamesStore.games.length > 0 && (
-          <Pagination
-            currentPage={gamesStore.currentPage}
-            totalPages={gamesStore.totalPages}
-            onPageChange={handlePageChange}
-          />
+            {/* Paginación */}
+            {gamesStore.games.length > 0 && (
+              <Pagination
+                currentPage={gamesStore.currentPage}
+                totalPages={gamesStore.totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </>
         )}
-      </div>
+      </Container>
     </div>
   )
 })

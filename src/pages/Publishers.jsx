@@ -6,6 +6,7 @@ import { observer } from "mobx-react-lite"
 import debounce from "lodash.debounce"
 import { useStore } from "../context/StoreContext"
 import Pagination from "../components/Pagination"
+import { Container, Row, Col, Form, Card, Alert, Button, Spinner } from "react-bootstrap"
 
 const Publishers = observer(() => {
   const { publishersStore } = useStore()
@@ -59,78 +60,99 @@ const Publishers = observer(() => {
     }
   }, [searchParams, publishersStore])
 
-  // Mensaje de error o de carga
-  if (publishersStore.loading) return <p className="text-center text-lg text-white">Cargando...</p>
-
-  if (publishersStore.error) return <p className="text-center text-red-500">{publishersStore.error}</p>
-
   return (
-    <div className="bg-gradient-to-r from-amber-300 to-green-400 min-h-screen text-white">
-      <div className="container mx-auto p-6">
-        <h1 className="text-5xl font-extrabold text-center mb-10 drop-shadow-lg">
+    <div className="bg-accent-gradient py-5">
+      <Container>
+        <h1 className="text-center text-white fw-bold mb-4">
+          <i className="bi bi-building me-2"></i>
           Explora las mejores compañías de videojuegos
         </h1>
 
-        <div className="mb-8 text-center">
-          <Link
-            to="/"
-            className="inline-block bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
-          >
-            ← Volver a la página principal
-          </Link>
+        <div className="text-center mb-4">
+          <Button as={Link} to="/" variant="light" className="shadow">
+            <i className="bi bi-arrow-left me-1"></i> Volver a la página principal
+          </Button>
         </div>
 
         {/* Campo de búsqueda */}
-        <form onSubmit={handleSubmit} className="flex justify-center mb-10">
-          <input
-            type="text"
-            placeholder="Busca una compañía..."
-            value={publishersStore.searchTerm}
-            onChange={handleSearchChange}
-            className="w-full sm:w-80 p-4 text-lg rounded-full focus:outline-none focus:ring-2 focus:ring-green-400 bg-white text-gray-800 placeholder-gray-500 shadow-xl"
-          />
-        </form>
+        <Form onSubmit={handleSubmit} className="search-container mb-5">
+          <Form.Group>
+            <Form.Control
+              type="text"
+              placeholder="Busca una compañía..."
+              value={publishersStore.searchTerm}
+              onChange={handleSearchChange}
+              className="py-2 shadow"
+            />
+          </Form.Group>
+        </Form>
+
+        {/* Mensaje de carga */}
+        {publishersStore.loading && (
+          <div className="text-center py-5">
+            <Spinner animation="border" variant="light" />
+            <p className="mt-2 text-white">Cargando publishers...</p>
+          </div>
+        )}
+
+        {/* Mensaje de error */}
+        {publishersStore.error && (
+          <Alert variant="danger" className="my-4">
+            <i className="bi bi-exclamation-triangle me-2"></i>
+            {publishersStore.error}
+          </Alert>
+        )}
 
         {/* Lista de publishers */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {publishersStore.publishers.length === 0 ? (
-            <p className="text-center text-xl text-gray-300 col-span-full">No se encontraron compañías.</p>
-          ) : (
-            publishersStore.publishers.map((publisher) => (
-              <Link
-                key={publisher.id}
-                to={`/publishers/${publisher.id}`}
-                className="block bg-white overflow-hidden shadow-2xl transform hover:scale-105 transition duration-300 border-solid border-3 border-black rounded-lg"
-              >
-                <div className="h-48 bg-gray-200 flex items-center justify-center">
-                  {publisher.image_background ? (
-                    <img
-                      src={publisher.image_background || "/placeholder.svg"}
-                      alt={publisher.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="text-4xl text-gray-400">🏢</div>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2">{publisher.name}</h2>
-                  <p className="text-sm text-gray-600">{publisher.games_count} juegos publicados</p>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
+        {!publishersStore.loading && (
+          <>
+            {publishersStore.publishers.length === 0 ? (
+              <Alert variant="info" className="text-center">
+                <i className="bi bi-info-circle me-2"></i>
+                No se encontraron compañías que coincidan con tu búsqueda.
+              </Alert>
+            ) : (
+              <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+                {publishersStore.publishers.map((publisher) => (
+                  <Col key={publisher.id}>
+                    <Link to={`/publishers/${publisher.id}`} className="text-decoration-none">
+                      <Card className="h-100 shadow">
+                        <div className="publisher-card-img bg-light d-flex align-items-center justify-content-center">
+                          {publisher.image_background ? (
+                            <Card.Img
+                              variant="top"
+                              src={publisher.image_background || "/placeholder.svg"}
+                              alt={publisher.name}
+                              className="publisher-card-img"
+                            />
+                          ) : (
+                            <i className="bi bi-building text-muted" style={{ fontSize: "3rem" }}></i>
+                          )}
+                        </div>
+                        <Card.Body>
+                          <Card.Title className="fw-bold text-dark">{publisher.name}</Card.Title>
+                          <Card.Text className="text-muted">
+                            <i className="bi bi-controller me-1"></i> {publisher.games_count} juegos publicados
+                          </Card.Text>
+                        </Card.Body>
+                      </Card>
+                    </Link>
+                  </Col>
+                ))}
+              </Row>
+            )}
 
-        {/* Paginación */}
-        {publishersStore.publishers.length > 0 && (
-          <Pagination
-            currentPage={publishersStore.currentPage}
-            totalPages={publishersStore.totalPages}
-            onPageChange={handlePageChange}
-          />
+            {/* Paginación */}
+            {publishersStore.publishers.length > 0 && (
+              <Pagination
+                currentPage={publishersStore.currentPage}
+                totalPages={publishersStore.totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </>
         )}
-      </div>
+      </Container>
     </div>
   )
 })

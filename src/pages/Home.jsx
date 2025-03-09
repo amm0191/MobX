@@ -1,16 +1,17 @@
 import { Link } from "react-router-dom"
 import { observer } from "mobx-react-lite"
 import Games from "./Games"
+import { Container, Card, Button } from "react-bootstrap"
 
 const Home = observer(() => {
   return (
-    <div className="bg-gradient-to-r from-amber-300 to-green-400 min-h-screen">
+    <div>
       {/* Banner con enlace a la landing page */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-500 py-4 text-white text-center">
-        <p className="text-lg">
+      <div className="bg-primary-gradient py-3 text-white text-center">
+        <p className="mb-0">
           ¿Primera vez aquí?
-          <Link to="/landing" className="ml-2 underline font-bold hover:text-amber-200">
-            Visita nuestra página de inicio
+          <Link to="/landing" className="ms-2 text-white fw-bold">
+            <u>Visita nuestra página de inicio</u>
           </Link>
         </p>
       </div>
@@ -19,20 +20,17 @@ const Home = observer(() => {
       <Games />
 
       {/* Sección de navegación a Publishers */}
-      <div className="container mx-auto p-6 text-center mb-12">
-        <div className="bg-white rounded-lg shadow-xl p-8">
-          <h2 className="text-3xl font-bold mb-4">¿Quieres explorar por compañías?</h2>
-          <p className="text-lg text-gray-600 mb-6">
-            Descubre los mejores publishers de videojuegos y explora sus catálogos
-          </p>
-          <Link
-            to="/publishers"
-            className="inline-block bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition"
-          >
-            Ver Publishers
-          </Link>
-        </div>
-      </div>
+      <Container className="py-5 text-center">
+        <Card className="shadow-lg border-0 p-4">
+          <Card.Body>
+            <h2 className="fw-bold mb-3">¿Quieres explorar por compañías?</h2>
+            <p className="text-muted mb-4">Descubre los mejores publishers de videojuegos y explora sus catálogos</p>
+            <Button as={Link} to="/publishers" variant="primary" className="btn-primary-custom btn-lg">
+              <i className="bi bi-building me-1"></i> Ver Publishers
+            </Button>
+          </Card.Body>
+        </Card>
+      </Container>
     </div>
   )
 })

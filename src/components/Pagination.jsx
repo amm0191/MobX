@@ -2,6 +2,7 @@
 
 import React from "react"
 import { observer } from "mobx-react-lite"
+import { Pagination as BootstrapPagination } from "react-bootstrap"
 
 const Pagination = observer(({ currentPage, totalPages, onPageChange }) => {
   // Determinar qué páginas mostrar
@@ -52,52 +53,27 @@ const Pagination = observer(({ currentPage, totalPages, onPageChange }) => {
   }
 
   return (
-    <div className="flex justify-center mt-10">
-      <div className="flex items-center space-x-2">
-        {/* Botón Anterior */}
-        <button
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`px-3 py-1 rounded-md ${
-            currentPage === 1
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-gray-800 text-white hover:bg-gray-700"
-          }`}
-        >
-          Anterior
-        </button>
+    <div className="d-flex justify-content-center mt-4">
+      <BootstrapPagination>
+        <BootstrapPagination.Prev onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1} />
 
-        {/* Números de página */}
         {getPageNumbers().map((page, index) => (
           <React.Fragment key={index}>
             {page === "..." ? (
-              <span className="px-3 py-1">...</span>
+              <BootstrapPagination.Ellipsis disabled />
             ) : (
-              <button
+              <BootstrapPagination.Item
+                active={currentPage === page}
                 onClick={() => typeof page === "number" && onPageChange(page)}
-                className={`px-3 py-1 rounded-md ${
-                  currentPage === page ? "bg-green-500 text-white" : "bg-white text-gray-800 hover:bg-gray-200"
-                }`}
               >
                 {page}
-              </button>
+              </BootstrapPagination.Item>
             )}
           </React.Fragment>
         ))}
 
-        {/* Botón Siguiente */}
-        <button
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className={`px-3 py-1 rounded-md ${
-            currentPage === totalPages
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-gray-800 text-white hover:bg-gray-700"
-          }`}
-        >
-          Siguiente
-        </button>
-      </div>
+        <BootstrapPagination.Next onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+      </BootstrapPagination>
     </div>
   )
 })

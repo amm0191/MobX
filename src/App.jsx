@@ -13,9 +13,9 @@ import Footer from "./components/Footer"
 const App = observer(() => {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen w-full">
+      <div className="d-flex flex-column min-vh-100">
         <Header />
-        <main className="flex-grow w-full">
+        <main className="flex-grow-1">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/landing" element={<LandingPage />} />

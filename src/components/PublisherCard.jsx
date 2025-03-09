@@ -1,26 +1,27 @@
+import { Card } from "react-bootstrap"
 import { Link } from "react-router-dom"
 
 const PublisherCard = ({ publisher }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
-      <img
+    <Card className="h-100 shadow">
+      <Card.Img
+        variant="top"
         src={publisher.image_background || "/placeholder.svg?height=200&width=300"}
         alt={publisher.name}
-        className="w-full h-48 object-cover"
+        className="publisher-card-img"
       />
-      <div className="p-4">
-        <h3 className="text-xl font-bold text-gray-800 mb-2">{publisher.name}</h3>
-        <p className="text-gray-600 mb-3">{publisher.games_count} juegos publicados</p>
-        <div className="flex justify-end">
-          <Link
-            to={`/publisher/${publisher.id}`}
-            className="bg-amber-500 text-white px-3 py-1 rounded-md hover:bg-amber-600 transition-colors"
-          >
+      <Card.Body>
+        <Card.Title className="fw-bold">{publisher.name}</Card.Title>
+        <Card.Text className="text-muted mb-3">
+          <i className="bi bi-controller me-1"></i> {publisher.games_count} juegos publicados
+        </Card.Text>
+        <div className="text-end">
+          <Link to={`/publishers/${publisher.id}`} className="btn btn-accent-custom text-white">
             Ver detalles
           </Link>
         </div>
-      </div>
-    </div>
+      </Card.Body>
+    </Card>
   )
 }
 
